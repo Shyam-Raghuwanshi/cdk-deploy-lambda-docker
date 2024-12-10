@@ -1,0 +1,26 @@
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Download Chrome binary directly
+RUN mkdir -p /usr/local/chrome && \
+    curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm -o /tmp/chrome.rpm
+
+# Print the RPM file details
+
+# Set Chrome executable path as a fallback
+ENV CHROME_EXECUTABLE_PATH=/opt/google/chrome/chrome
+RUN ls -l /tmp/chrome.rpm
+
+# Install dependencies
+WORKDIR /var/task
+
+COPY package*.json ./
+RUN npm ci
+
+# Copy source files
+COPY . .
+
+# Compile TypeScript
+RUN npm run build
+
+# Lambda handler
+CMD ["dist/app.handler"]

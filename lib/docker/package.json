@@ -1,0 +1,15 @@
+{
+  "name": "lambda-docker",
+  "version": "1.0.0",
+  "description": "A simple Lambda function using Docker",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@shyamraghuonec/rust-lib": "^1.0.6"
+  },
+  "devDependencies": {
+    "typescript": "5.5.2"
+  }
+}
