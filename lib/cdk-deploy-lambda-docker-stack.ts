@@ -14,12 +14,12 @@ export class CdkDeployLambdaDockerStack extends Stack {
     // Define the Docker image Lambda function
     const lambdaFunction = new DockerImageFunction(
       this,
-      "lambdaFunction",
+      "lambdaFunction2",
       {
         code: DockerImageCode.fromImageAsset("lib/docker"),
         architecture: Architecture.X86_64,
         memorySize: 512,
-        timeout: cdk.Duration.seconds(15),
+        timeout: cdk.Duration.seconds(300),
         environment: {
           NODE_OPTIONS: "--enable-source-maps",
         },

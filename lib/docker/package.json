@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@shyamraghuonec/rust-lib": "^1.0.6"
+    "@shyamraghuonec/rust-lib": "^1.0.8"
   },
   "devDependencies": {
     "typescript": "5.5.2"

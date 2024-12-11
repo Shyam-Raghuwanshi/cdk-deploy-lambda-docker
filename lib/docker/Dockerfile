@@ -1,30 +1,44 @@
-FROM browserless/chrome AS chrome-base
-
-# Use Node.js Lambda base image
 FROM public.ecr.aws/lambda/nodejs:20
 
-# Copy Browserless Chrome from the previous stage if needed
-# COPY --from=chrome-base /app /app
-
+# Set the working directory
 WORKDIR /var/task
 
-# Copy package files
+# Install missing libraries using microdnf
+RUN microdnf install -y \
+    nss \
+    nss-util \
+    nspr \
+    atk \
+    at-spi2-atk \
+    cups-libs \
+    libdrm \
+    dbus-libs \
+    expat \
+    libxcb \
+    libX11 \
+    libXcomposite \
+    libXdamage \
+    libXext \
+    libXfixes \
+    libXrandr \
+    mesa-libgbm \
+    pango \
+    cairo \
+    alsa-lib \
+    at-spi2-core \
+    libxshmfence && \
+    microdnf clean all
+
+# Copy package files and install Node.js dependencies
 COPY package*.json ./
 
-# Install dependencies
 RUN npm ci
 
-# Copy application files
+# Copy application code
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Environment variable to point to Browserless Chrome
-ENV BROWSERLESS_WS_ENDPOINT=ws://localhost:3000
-
-# Expose the port Browserless Chrome uses (if running in same container)
-EXPOSE 3000
-
-# Command to run the application
+# Define the Lambda handler
 CMD ["dist/app.handler"]

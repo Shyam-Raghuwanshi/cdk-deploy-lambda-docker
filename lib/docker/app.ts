@@ -1,13 +1,12 @@
 // @ts-nocheck
-import { scrapeWebsite, scrapeTextFromUrls } from "@shyamraghuonec/rust-lib";
+import { generateEmbeddings, ModelTypes } from "@shyamraghuonec/rust-lib";
+
 export const handler = async (event) => {
   console.log("Full Event:", JSON.stringify(event, null, 2));
-  
   try {
     console.log("Attempting to scrape website");
     const scrapeResult = await Promise.race([
-      // scrapeWebsite("https://hono.dev"),
-      scrapeTextFromUrls(["https://hono.dev"]),
+      await generateEmbeddings(["hi"], ModelTypes.AllMiniLML12V2),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Scrape timeout")), 2000)
       ),
