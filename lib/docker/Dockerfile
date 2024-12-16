@@ -3,7 +3,6 @@ FROM public.ecr.aws/lambda/nodejs:20
 # Set the working directory
 WORKDIR /var/task
 
-# Install missing libraries using microdnf
 RUN microdnf install -y \
     nss \
     nss-util \
@@ -36,6 +35,8 @@ RUN npm ci
 
 # Copy application code
 COPY . .
+
+EXPOSE 8080
 
 # Build the application
 RUN npm run build
