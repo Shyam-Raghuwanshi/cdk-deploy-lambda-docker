@@ -48,14 +48,14 @@ app.post('/', async (c) => {
 
 app.post('/generateEmbeddings', async (c) => {
   const { text } = await c.req.json();
-  const embeddings = await generateEmbeddings(text, ModelTypes.AllMiniLML12V2);
+  const embeddings = generateEmbeddings(text, ModelTypes.AllMiniLML12V2);
   return c.json({ embeddings });
 })
 
 app.post('/scrapeTextFromUrlPlaywright', async (c) => {
   const { url } = await c.req.json();
   const text = await scrapeTextFromUrlPlaywright(url)
-  return c.text(JSON.stringify(text));
+  return c.json({ text });
 });
 
 app.post("/scrapeWeb", async (c) => {
