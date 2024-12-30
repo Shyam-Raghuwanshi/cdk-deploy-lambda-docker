@@ -67,7 +67,7 @@ app.post("/scrapeWeb", async (c) => {
 app.post("/scrapeTextFromUrls", async (c) => {
   const { urls } = await c.req.json();
   const textArr = await scrapeTextFromUrls(urls);
-  return c.text(JSON.stringify(textArr));
+  return c.json(textArr);
 });
 
 export const handler = handle(app)

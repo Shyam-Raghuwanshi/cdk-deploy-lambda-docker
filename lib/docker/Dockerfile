@@ -30,6 +30,7 @@ RUN microdnf install -y \
 
 # Copy package files and install Node.js dependencies
 COPY package*.json ./
+COPY .fastembed_cache ./
 
 RUN npm ci
 
