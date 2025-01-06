@@ -1,0 +1,338 @@
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Set the working directory
+WORKDIR /var/task
+
+# Install required dependencies, including libstdc++, OpenSSL development libraries, and pkg-config
+RUN microdnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    rust \
+    cargo \
+    libstdc++ \
+    openssl-devel \
+    pkg-config \
+    nss \
+    nss-util \
+    nspr \
+    atk \
+    at-spi2-atk \
+    cups-libs \
+    libdrm \
+    dbus-libs \
+    expat \
+    libxcb \
+    libX11 \
+    libXcomposite \
+    libXdamage \
+    libXext \
+    libXfixes \
+    libXrandr \
+    mesa-libgbm \
+    pango \
+    cairo \
+    alsa-lib \
+    at-spi2-core \
+    libxshmfence && \
+    microdnf clean all
+
+# Install Rust using rustup and set up the environment
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    source $HOME/.cargo/env && \
+    rustup install stable && \
+    rustup default stable 
+
+# Copy Rust library source code
+COPY ./src ./src
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+
+# Copy package files and install Node.js dependencies
+COPY package*.json ./
+
+RUN npm ci
+
+# Compile the Rust-based NAPI module
+RUN source $HOME/.cargo/env && \
+    npm run build:napi
+
+# Copy application code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Define the Lambda handler
+CMD ["dist/app.handler"]
+
+# ---------------------------------------------------------------
+
+# Use the Node.js base image
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Set the working directory
+WORKDIR /var/task
+
+# Install dependencies
+RUN microdnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    rust \
+    cargo \
+    libstdc++ \
+    openssl-devel \
+    pkg-config \
+    nss \
+    nss-util \
+    nspr \
+    atk \
+    at-spi2-atk \
+    cups-libs \
+    libdrm \
+    dbus-libs \
+    expat \
+    libxcb \
+    libX11 \
+    libXcomposite \
+    libXdamage \
+    libXext \
+    libXfixes \
+    libXrandr \
+    mesa-libgbm \
+    pango \
+    cairo \
+    alsa-lib \
+    at-spi2-core \
+    libxshmfence && \
+    microdnf clean all
+
+# Install Rust using rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Ensure the environment is properly sourced for all future RUN commands
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Install stable Rust and set it as the default
+RUN rustup install stable && \
+    rustup default stable
+
+# Copy Rust library source code
+COPY ./src ./src
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+
+# Copy package files and install Node.js dependencies
+COPY package*.json ./
+
+RUN npm ci
+
+# Compile the Rust-based NAPI module
+RUN npm run build:napi
+
+# Copy application code
+RUN ls -la
+# COPY . .
+
+# Build the application
+RUN npm run build
+
+# Define the Lambda handler
+CMD ["dist/app.handler"]
+
+
+
+# --------------------------
+
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Set the working directory
+WORKDIR /var/task
+
+# Install required dependencies, including libstdc++, OpenSSL development libraries, and pkg-config
+RUN microdnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    rust \
+    cargo \
+    libstdc++ \
+    openssl-devel \
+    pkg-config && \
+    microdnf clean all
+
+# Install Rust using rustup and set up the environment
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Ensure the environment is properly sourced for all future RUN commands
+ENV PATH="/root/.cargo/bin:$PATH"
+ENV NPM_TOKEN=
+# Copy Rust library source code
+COPY ./src ./src
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+
+# Copy package files and install Node.js dependencies
+COPY package*.json ./
+
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm ci
+
+# Compile the Rust-based NAPI module
+RUN npm run build:napi
+
+COPY ./pkg ./pkg
+RUN cp index.linux-x64-gnu.node ./pkg/
+
+# Configure npm authentication
+RUN echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+# Add this before the ENTRYPOINT
+RUN test -n "$NPM_TOKEN" || (echo "NPM_TOKEN not set" && exit 1)
+
+# Replace the ENTRYPOINT and CMD with:
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN} && npm publish"]
+
+
+
+
+
+# ---------------------------------
+
+
+# Use the Node.js base image
+FROM public.ecr.aws/lambda/nodejs:20
+
+# Set the working directory
+WORKDIR /var/task
+
+# Install dependencies
+RUN microdnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    rust \
+    cargo \
+    libstdc++ \
+    openssl-devel \
+    pkg-config \
+    nss \
+    nss-util \
+    nspr \
+    atk \
+    at-spi2-atk \
+    cups-libs \
+    libdrm \
+    dbus-libs \
+    expat \
+    libxcb \
+    libX11 \
+    libXcomposite \
+    libXdamage \
+    libXext \
+    libXfixes \
+    libXrandr \
+    mesa-libgbm \
+    pango \
+    cairo \
+    alsa-lib \
+    at-spi2-core \
+    libxshmfence && \
+    microdnf clean all
+
+# Install Rust using rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Ensure the environment is properly sourced for all future RUN commands
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Install stable Rust and set it as the default
+RUN rustup install stable && \
+    rustup default stable
+
+# Copy Rust library source code
+COPY ./src ./src
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+
+# Copy package files and install Node.js dependencies
+COPY package*.json ./
+
+RUN npm ci
+
+# Compile the Rust-based NAPI module
+RUN npm run build:napi
+
+# Copy application code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+RUN mv index.linux-x64-gnu.node rust-lib-linux-x64-gnu.node
+
+# Define the Lambda handler
+CMD ["dist/app.handler"]
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------- successfull package
+
+# Stage 1: Build using AWS Lambda Node.js image
+FROM public.ecr.aws/lambda/nodejs:20 AS builder
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies for Rust and NAPI build
+RUN microdnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    rust \
+    cargo \
+    libstdc++ \
+    openssl-devel \
+    pkg-config && \
+    microdnf clean all
+
+# Install Rust using rustup and set up the environment
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Copy source code and dependencies
+COPY ./src ./src
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+COPY package*.json ./
+
+# Install Node.js dependencies and build the Rust-based NAPI module
+RUN npm ci
+RUN npm run build:napi
+
+# Stage 2: Publish using tozny/npm image
+FROM tozny/npm
+
+# Set the working directory
+WORKDIR /src/
+
+# Copy built files from the previous stage
+COPY ./pkg/package.json ./
+COPY --from=builder /app/index.linux-x64-gnu.node ./
+
+# Copy publish script
+COPY publish.sh /bin/
+
+# Set the entrypoint to the publish script
+ENTRYPOINT ["/bin/publish.sh"]
+
+

@@ -1,0 +1,4 @@
+Error scraping https://google.com: GenericFailure, Error "Failed to launch chromium because executable doesn't exist at /root/.cache/ms-playwright/chromium-878941/chrome-linux/chrome\nTry re-installing playwright with \"npm install playwright\""
+Scraping completed in 112.675891738s. Scraped 1 URLs.
+2025-01-05T17:38:02.672Z        1719a91a-ee39-4488-b1c6-3da0841f97c2    INFO    [
+  `Error scraping https://google.com: GenericFailure, Error "Failed to launch chromium because executable doesn't exist at /root/.cache/ms-playwright/chromium-878941/chrome-linux/chrome\\nTry re-installing playwright with \\"npm install playwright\\""`
