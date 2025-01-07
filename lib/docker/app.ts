@@ -11,7 +11,7 @@ app.post('/', async (c) => {
 
 app.post('/generateEmbeddings', async (c) => {
   const { text } = await c.req.json();
-  const embeddings = generateEmbeddings(text, ModelTypes.AllMiniLML12V2);
+  const embeddings = generateEmbeddings(text, ModelTypes.GTELargeENV15);
   return c.json({ embeddings });
 })
 

@@ -30,14 +30,12 @@ RUN microdnf install -y \
 
 # Copy package files and install Node.js dependencies
 COPY package*.json ./
-COPY .fastembed_cache ./
-
+COPY .fastembed_cache ./fastembed_cache
+# COPY ms-playwright ../../root/.cache/ms-playwright
 RUN npm ci
 
 # Copy application code
 COPY . .
-
-EXPOSE 8080
 
 # Build the application
 RUN npm run build

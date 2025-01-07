@@ -6,4 +6,5 @@ node_modules
 # CDK asset staging directory
 .cdk.staging
 .fastembed_cache
+ms-playwright
 cdk.out

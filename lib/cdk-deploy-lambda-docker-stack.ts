@@ -25,15 +25,7 @@ export class CdkDeployLambdaDockerStack extends Stack {
         },
       }
     );
-    // Add a Function URL
-    // const functionUrl = lambdaFunction.addFunctionUrl({
-    //   authType: FunctionUrlAuthType.NONE,
-    // });
-
-    // new CfnOutput(this, "FunctionUrl", {
-    //   value: functionUrl.url,
-    // });
-
+    
     new apigw.LambdaRestApi(this, 'myapi', {
       handler: lambdaFunction,
     })
